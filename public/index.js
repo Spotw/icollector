@@ -115,7 +115,7 @@ async function load() {
       '<td>' + esc(r.loai_thong_tin) + '</td>' +
       '<td class="nd">' + esc(r.noi_dung) + '</td>' +
       '<td class="tg">' + fmtTime(r.created_at) + '</td>' +
-      //'<td><button class="del" data-id="' + r.id + '">Xóa</button></td></tr>'
+      '<td><button class="del" data-id="' + r.id + '">Xóa</button></td></tr>'
     ).join('');
   } catch (e) {
     tbody.innerHTML = '<tr><td colspan="6" class="empty">Không tải được dữ liệu</td></tr>';
@@ -203,11 +203,11 @@ export default {
       return json({ ok: true, id: r.meta.last_row_id }, 201);
     }
 
-    const m = pathname.match(/^\/api\/entries\/(\d+)$/);
-    if (m && request.method === 'DELETE') {
-      await env.DB.prepare('DELETE FROM entries WHERE id = ?').bind(Number(m[1])).run();
-      return json({ ok: true });
-    }
+   // const m = pathname.match(/^\/api\/entries\/(\d+)$/);
+    //if (m && request.method === 'DELETE') {
+      //await env.DB.prepare('DELETE FROM entries WHERE id = ?').bind(Number(m[1])).run();
+      //return json({ ok: true });
+    //}
 
     return new Response('Not found', { status: 404 });
   },
