@@ -14,6 +14,9 @@ const HTML = `<!DOCTYPE html>
   .wrap { max-width: 960px; margin: 0 auto; padding: 24px 16px 48px; }
   h1 { font-size: 1.5rem; margin: 0 0 16px; }
   h2 { font-size: 1.1rem; margin: 0 0 12px; }
+  .clock { margin: -8px 0 16px; color: var(--muted); font-size: .95rem; }
+  .clock strong { color: var(--text); font-variant-numeric: tabular-nums; }
+  td.tg { white-space: nowrap; color: var(--muted); font-size: .9rem; }
   .card { background:var(--card); border:1px solid var(--line); border-radius:12px; padding:20px; margin-bottom:24px; }
   label { display:block; font-size:.85rem; color:var(--muted); margin-bottom:4px; }
   input, textarea { width:100%; padding:10px 12px; border:1px solid var(--line); border-radius:8px; background:transparent; color:var(--text); font:inherit; }
@@ -38,6 +41,7 @@ const HTML = `<!DOCTYPE html>
 <body>
 <div class="wrap">
   <h1>Thông tin thu thập trong ngày</h1>
+  <div class="clock">Bây giờ: <strong id="clock">--</strong></div>
 
   <div class="card">
     <h2>Nhập thông tin</h2>
@@ -62,7 +66,7 @@ const HTML = `<!DOCTYPE html>
     <h2>Danh sách đã nhập</h2>
     <div class="scroll">
       <table>
-        <thead><tr><th>STT</th><th>Mô tả</th><th>Loại thông tin</th><th>Nội dung thông tin</th><th></th></tr></thead>
+        <thead><tr><th>STT</th><th>Mô tả</th><th>Loại thông tin</th><th>Nội dung thông tin</th><th>Thời gian thêm</th><th></th></tr></thead>
         <tbody id="tbody"></tbody>
       </table>
     </div>
@@ -77,12 +81,32 @@ function esc(s) {
   return String(s).replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
 }
 
+const TZ = 'Asia/Ho_Chi_Minh';
+
+// created_at lưu dạng UTC "YYYY-MM-DD HH:MM:SS" -> hiển thị giờ Việt Nam
+function fmtTime(s) {
+  if (!s) return '';
+  const d = new Date(s.replace(' ', 'T') + 'Z');
+  if (isNaN(d)) return esc(s);
+  return d.toLocaleString('vi-VN', { timeZone: TZ, hour12: false });
+}
+
+function tick() {
+  $('clock').textContent = new Date().toLocaleString('vi-VN', {
+    timeZone: TZ, hour12: false, weekday: 'long',
+    day: '2-digit', month: '2-digit', year: 'numeric',
+    hour: '2-digit', minute: '2-digit', second: '2-digit',
+  });
+}
+tick();
+setInterval(tick, 1000);
+
 async function load() {
   try {
     const res = await fetch('/api/entries');
     const data = await res.json();
     if (!data.length) {
-      tbody.innerHTML = '<tr><td colspan="5" class="empty">Chưa có dữ liệu</td></tr>';
+      tbody.innerHTML = '<tr><td colspan="6" class="empty">Chưa có dữ liệu</td></tr>';
       return;
     }
     tbody.innerHTML = data.map((r, i) =>
@@ -90,10 +114,11 @@ async function load() {
       '<td>' + esc(r.mo_ta) + '</td>' +
       '<td>' + esc(r.loai_thong_tin) + '</td>' +
       '<td class="nd">' + esc(r.noi_dung) + '</td>' +
+      '<td class="tg">' + fmtTime(r.created_at) + '</td>' +
       '<td><button class="del" data-id="' + r.id + '">Xóa</button></td></tr>'
     ).join('');
   } catch (e) {
-    tbody.innerHTML = '<tr><td colspan="5" class="empty">Không tải được dữ liệu</td></tr>';
+    tbody.innerHTML = '<tr><td colspan="6" class="empty">Không tải được dữ liệu</td></tr>';
   }
 }
 
