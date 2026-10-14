@@ -40,11 +40,11 @@ const HTML = `<!DOCTYPE html>
 </head>
 <body>
 <div class="wrap">
-  <h1>Trung tâm thông tin công khai</h1>
+  <h1>TRUNG TÂM THÔNG TIN TỔNG HỢP</h1>
   <div class="clock">Bây giờ: <strong id="clock">--</strong></div>
 
   <div class="card">
-    <h2>Nhập thông tin bạn đã thu thập được trong ngày (Thông tin công khai là được)</h2>
+    <h2>Nhập thông tin bạn đã thu thập được trong ngày (Không phải tin mật là được)</h2>
     <div class="row">
       <div class="field">
         <label for="loai">Loại thông tin</label>
@@ -83,7 +83,7 @@ function esc(s) {
 
 const TZ = 'Asia/Ho_Chi_Minh';
 
-// created_at lưu dạng UTC "YYYY-MM-DD HH:MM:SS" -> hiển thị giờ Việt Nam
+// created_at lưu dạng UTC "YYYY-MM-DD HH:MM" -> hiển thị giờ Việt Nam
 function fmtTime(s) {
   if (!s) return '';
   const d = new Date(s.replace(' ', 'T') + 'Z');
@@ -95,7 +95,7 @@ function tick() {
   $('clock').textContent = new Date().toLocaleString('vi-VN', {
     timeZone: TZ, hour12: false, weekday: 'long',
     day: '2-digit', month: '2-digit', year: 'numeric',
-    hour: '2-digit', minute: '2-digit', second: '2-digit',
+    hour: '2-digit', minute: '2-digit',
   });
 }
 tick();
