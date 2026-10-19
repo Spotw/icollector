@@ -3,7 +3,7 @@ const HTML = `<!DOCTYPE html>
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>Thông tin thu thập trong ngày</title>
+<title>Cổng thông tin dùng chung</title>
 <style>
   :root { --bg:#f4f6fa; --card:#fff; --text:#1f2937; --muted:#6b7280; --primary:#2563eb; --danger:#dc2626; --line:#e5e7eb; }
   @media (prefers-color-scheme: dark) {
@@ -40,11 +40,11 @@ const HTML = `<!DOCTYPE html>
 </head>
 <body>
 <div class="wrap">
-  <h1>Thông tin thu thập trong ngày</h1>
+  <h1>Trung tâm thông tin</h1>
   <div class="clock">Bây giờ: <strong id="clock">--</strong></div>
 
   <div class="card">
-    <h2>Nhập thông tin</h2>
+    <h2>Nhập thông tin (không phải tin mật là được)</h2>
     <div class="row">
       <div class="field">
         <label for="loai">Loại thông tin</label>
