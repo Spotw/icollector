@@ -3,7 +3,7 @@ const HTML = `<!DOCTYPE html>
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>Trung tâm thông tin</title>
+<title>Thông tin thu thập trong ngày</title>
 <style>
   :root { --bg:#f4f6fa; --card:#fff; --text:#1f2937; --muted:#6b7280; --primary:#2563eb; --danger:#dc2626; --line:#e5e7eb; }
   @media (prefers-color-scheme: dark) {
@@ -40,19 +40,19 @@ const HTML = `<!DOCTYPE html>
 </head>
 <body>
 <div class="wrap">
-  <h1>TRUNG TÂM THÔNG TIN TỔNG HỢP</h1>
+  <h1>Thông tin thu thập trong ngày</h1>
   <div class="clock">Bây giờ: <strong id="clock">--</strong></div>
 
   <div class="card">
-    <h2>Nhập thông tin bạn đã thu thập được trong ngày (Không phải tin mật là được)</h2>
+    <h2>Nhập thông tin</h2>
     <div class="row">
       <div class="field">
         <label for="loai">Loại thông tin</label>
-        <input id="loai" maxlength="100" placeholder="VD: TT cá nhân, TT nội bộ...">
+        <input id="loai" maxlength="100" placeholder="VD: Công việc, Ý tưởng...">
       </div>
       <div class="field">
         <label for="mota">Mô tả</label>
-        <input id="mota" maxlength="300" placeholder="Mô tả chung về thông tin">
+        <input id="mota" maxlength="300" placeholder="Mô tả ngắn gọn">
       </div>
     </div>
     <div class="field">
@@ -63,7 +63,7 @@ const HTML = `<!DOCTYPE html>
   </div>
 
   <div class="card">
-    <h2>Danh sách đã nhập</h2>
+    <h2>Thông tin vừa thêm</h2>
     <div class="scroll">
       <table>
         <thead><tr><th>STT</th><th>Mô tả</th><th>Loại thông tin</th><th>Nội dung thông tin</th><th>Thời gian thêm</th><th></th></tr></thead>
@@ -83,7 +83,7 @@ function esc(s) {
 
 const TZ = 'Asia/Ho_Chi_Minh';
 
-// created_at lưu dạng UTC "YYYY-MM-DD HH:MM" -> hiển thị giờ Việt Nam
+// created_at lưu dạng UTC "YYYY-MM-DD HH:MM:SS" -> hiển thị giờ Việt Nam
 function fmtTime(s) {
   if (!s) return '';
   const d = new Date(s.replace(' ', 'T') + 'Z');
@@ -95,18 +95,25 @@ function tick() {
   $('clock').textContent = new Date().toLocaleString('vi-VN', {
     timeZone: TZ, hour12: false, weekday: 'long',
     day: '2-digit', month: '2-digit', year: 'numeric',
-    hour: '2-digit', minute: '2-digit',
+    hour: '2-digit', minute: '2-digit', 
   });
 }
 tick();
 setInterval(tick, 1000);
 
+// Chỉ hiển thị các dòng vừa thêm trong lần mở trang này (dữ liệu cũ vẫn nằm trong D1)
+const sessionIds = new Set();
+
 async function load() {
   try {
+    if (!sessionIds.size) {
+      tbody.innerHTML = '<tr><td colspan="6" class="empty">Chưa có thông tin nào được thêm</td></tr>';
+      return;
+    }
     const res = await fetch('/api/entries');
-    const data = await res.json();
+    const data = (await res.json()).filter(r => sessionIds.has(r.id));
     if (!data.length) {
-      tbody.innerHTML = '<tr><td colspan="6" class="empty">Chưa có dữ liệu</td></tr>';
+      tbody.innerHTML = '<tr><td colspan="6" class="empty">Chưa có thông tin nào được thêm</td></tr>';
       return;
     }
     tbody.innerHTML = data.map((r, i) =>
@@ -140,6 +147,7 @@ btn.addEventListener('click', async () => {
       body: JSON.stringify(body),
     });
     if (!res.ok) throw new Error();
+    sessionIds.add((await res.json()).id);
     $('loai').value = ''; $('mota').value = ''; $('noidung').value = '';
     msg.textContent = 'Đã lưu.';
     await load();
@@ -154,6 +162,7 @@ tbody.addEventListener('click', async (e) => {
   const id = e.target.dataset && e.target.dataset.id;
   if (!id || !confirm('Xóa dòng này?')) return;
   await fetch('/api/entries/' + id, { method: 'DELETE' });
+  sessionIds.delete(Number(id));
   load();
 });
 
