@@ -135,10 +135,10 @@ btn.addEventListener('click', async () => {
     mo_ta: $('mota').value.trim(),
     noi_dung: $('noidung').value.trim(),
   };
-  if (!body.loai_thong_tin || !body.mo_ta || !body.noi_dung) {
-    msg.textContent = 'Vui lòng nhập đủ 3 trường.';
-    return;
-  }
+  //if (!body.loai_thong_tin || !body.mo_ta || !body.noi_dung) {
+    //msg.textContent = 'Vui lòng nhập đủ 3 trường.';
+    //return;
+  //}
   btn.disabled = true; msg.textContent = 'Đang lưu...';
   try {
     const res = await fetch('/api/entries', {
