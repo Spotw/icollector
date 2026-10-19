@@ -203,11 +203,11 @@ export default {
       return json({ ok: true, id: r.meta.last_row_id }, 201);
     }
 
-   // const m = pathname.match(/^\/api\/entries\/(\d+)$/);
-    //if (m && request.method === 'DELETE') {
-      //await env.DB.prepare('DELETE FROM entries WHERE id = ?').bind(Number(m[1])).run();
-      //return json({ ok: true });
-    //}
+    const m = pathname.match(/^\/api\/entries\/(\d+)$/);
+    if (m && request.method === 'DELETE') {
+      await env.DB.prepare('DELETE FROM entries WHERE id = ?').bind(Number(m[1])).run();
+      return json({ ok: true });
+    }
 
     return new Response('Not found', { status: 404 });
   },
