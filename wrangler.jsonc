@@ -1,6 +1,6 @@
 {
   "name": "icollector",
-  "main": "public/index.js",
+  "main": "public/index.html",
   "compatibility_date": "2026-10-13",
   "observability": {
     "enabled": true
