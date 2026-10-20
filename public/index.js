@@ -151,9 +151,11 @@ btn.addEventListener('click', async () => {
     $('loai').value = ''; $('mota').value = ''; $('noidung').value = '';
     msg.textContent = 'Đã lưu.';
     await load();
-  } catch (e) {
-    msg.textContent = 'Lưu thất bại, thử lại.';
-  } finally {
+  } 
+    //catch (e) {
+    //msg.textContent = 'Lưu thất bại, thử lại.';
+  //}
+    finally {
     btn.disabled = false;
   }
 });
