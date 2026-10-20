@@ -1,86 +1,3 @@
-const HTML = `<!DOCTYPE html>
-<html lang="vi">
-<head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1">
-<title>Cổng Thông tin dùng chung</title>
-<style>
-  :root { --bg:#f4f6fa; --card:#fff; --text:#1f2937; --muted:#6b7280; --primary:#2563eb; --danger:#dc2626; --line:#e5e7eb; }
-  @media (prefers-color-scheme: dark) {
-    :root { --bg:#111827; --card:#1f2937; --text:#f3f4f6; --muted:#9ca3af; --primary:#3b82f6; --danger:#f87171; --line:#374151; }
-  }
-  * { box-sizing: border-box; }
-  body { margin:0; font-family: system-ui, -apple-system, "Segoe UI", Roboto, sans-serif; background:var(--bg); color:var(--text); }
-  .wrap { max-width: 960px; margin: 0 auto; padding: 24px 16px 48px; }
-  h1 { font-size: 1.5rem; margin: 0 0 16px; }
-  h2 { font-size: 1.1rem; margin: 0 0 12px; }
-  .clock { margin: -8px 0 16px; color: var(--muted); font-size: .95rem; }
-  .clock3d { display:flex; flex-direction:column; align-items:center; margin: 0 0 16px; }
-  .clock3d .clock { margin: 0; text-align:center; }
-  #clockCanvas { width:240px; height:240px; max-width:100%; }
-  #clockCanvas canvas { max-width:100%; height:auto !important; }
-  .clock strong { color: var(--text); font-variant-numeric: tabular-nums; }
-  td.tg { white-space: nowrap; color: var(--muted); font-size: .9rem; }
-  .card { background:var(--card); border:1px solid var(--line); border-radius:12px; padding:20px; margin-bottom:24px; }
-  label { display:block; font-size:.85rem; color:var(--muted); margin-bottom:4px; }
-  input, textarea { width:100%; padding:10px 12px; border:1px solid var(--line); border-radius:8px; background:transparent; color:var(--text); font:inherit; }
-  input:focus, textarea:focus { outline:2px solid var(--primary); border-color:transparent; }
-  .row { display:grid; grid-template-columns: 1fr 2fr; gap:12px; margin-bottom:12px; }
-  @media (max-width:600px) { .row { grid-template-columns: 1fr; } }
-  .field { margin-bottom:12px; }
-  .row .field { margin-bottom:0; }
-  button { cursor:pointer; border:0; border-radius:8px; padding:10px 18px; font:inherit; font-weight:600; background:var(--primary); color:#fff; }
-  button:disabled { opacity:.6; cursor:wait; }
-  button.del { background:transparent; color:var(--danger); padding:4px 8px; font-weight:500; }
-  .msg { margin-left:12px; font-size:.9rem; color:var(--muted); }
-  .scroll { overflow-x:auto; }
-  table { width:100%; border-collapse:collapse; min-width:560px; }
-  th, td { text-align:left; padding:10px 8px; border-bottom:1px solid var(--line); vertical-align:top; }
-  th { font-size:.8rem; text-transform:uppercase; letter-spacing:.04em; color:var(--muted); }
-  td.stt { width:48px; color:var(--muted); }
-  td.nd { white-space:pre-wrap; word-break:break-word; }
-  .empty { color:var(--muted); text-align:center; padding:24px 0; }
-</style>
-</head>
-<body>
-<div class="wrap">
-  <h1>Cổng Thông tin</h1>
-  <div class="clock3d">
-    <div id="clockCanvas"></div>
-    <div class="clock"><strong id="clock">--</strong></div>
-  </div>
-
-  <div class="card">
-    <h2>Nhập thông tin (không phải tin mật là được)</h2>
-    <div class="row">
-      <div class="field">
-        <label for="loai">Loại thông tin *</label>
-        <input id="loai" maxlength="100" placeholder="VD: Công việc, Nội bộ...">
-      </div>
-      <div class="field">
-        <label for="mota">Mô tả *</label>
-        <input id="mota" maxlength="300" placeholder="Mô tả nội dung">
-      </div>
-    </div>
-    <div class="field">
-      <label for="noidung">Nội dung thông tin (không bắt buộc)</label>
-      <textarea id="noidung" rows="4" placeholder="Nội dung chi tiết..."></textarea>
-    </div>
-    <button id="btnSave">Lưu</button><span class="msg" id="msg"></span>
-  </div>
-
-  <div class="card">
-    <h2>Thông tin vừa thêm</h2>
-    <div class="scroll">
-      <table>
-        <thead><tr><th>STT</th><th>Mô tả</th><th>Loại thông tin</th><th>Nội dung thông tin</th><th>Thời gian thêm</th><th></th></tr></thead>
-        <tbody id="tbody"></tbody>
-      </table>
-    </div>
-  </div>
-</div>
-
-<script>
 const $ = (id) => document.getElementById(id);
 const tbody = $('tbody'), msg = $('msg'), btn = $('btnSave');
 
@@ -178,10 +95,6 @@ tbody.addEventListener('click', async (e) => {
 });
 
 load();
-</script>
-<script src="https://cdn.jsdelivr.net/npm/three@0.137.5/build/three.min.js"></script>
-<script src="https://cdn.jsdelivr.net/npm/gsap@3.12.5/dist/gsap.min.js"></script>
-<script>
 // Đồng hồ 3D (Three.js + GSAP). Nếu thư viện/WebGL lỗi thì chỉ còn dòng chữ giờ bên dưới.
 (function () {
   var holder = document.getElementById('clockCanvas');
@@ -307,9 +220,6 @@ load();
     requestAnimationFrame(render);
   })();
 })();
-</script>
-</body>
-</html>`;
 
 const json = (data, status = 200) =>
   new Response(JSON.stringify(data), {
