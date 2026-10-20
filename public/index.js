@@ -3,7 +3,7 @@ const HTML = `<!DOCTYPE html>
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>Cổng thông tin dùng chung</title>
+<title>Cổng Thông tin dùng chung</title>
 <style>
   :root { --bg:#f4f6fa; --card:#fff; --text:#1f2937; --muted:#6b7280; --primary:#2563eb; --danger:#dc2626; --line:#e5e7eb; }
   @media (prefers-color-scheme: dark) {
@@ -40,23 +40,23 @@ const HTML = `<!DOCTYPE html>
 </head>
 <body>
 <div class="wrap">
-  <h1>Trung tâm thông tin</h1>
+  <h1>Cổng Thông tin</h1>
   <div class="clock">Bây giờ: <strong id="clock">--</strong></div>
 
   <div class="card">
     <h2>Nhập thông tin (không phải tin mật là được)</h2>
     <div class="row">
       <div class="field">
-        <label for="loai">Loại thông tin</label>
-        <input id="loai" maxlength="100" placeholder="VD: Công việc, Ý tưởng...">
+        <label for="loai">Loại thông tin *</label>
+        <input id="loai" maxlength="100" placeholder="VD: Công việc, Thông tin nội bộ...">
       </div>
       <div class="field">
-        <label for="mota">Mô tả</label>
-        <input id="mota" maxlength="300" placeholder="Mô tả ngắn gọn">
+        <label for="mota">Mô tả *</label>
+        <input id="mota" maxlength="300" placeholder="Mô tả về thông tin">
       </div>
     </div>
     <div class="field">
-      <label for="noidung">Nội dung thông tin</label>
+      <label for="noidung">Nội dung thông tin (không bắt buộc)</label>
       <textarea id="noidung" rows="4" placeholder="Nội dung chi tiết..."></textarea>
     </div>
     <button id="btnSave">Lưu</button><span class="msg" id="msg"></span>
@@ -77,6 +77,10 @@ const HTML = `<!DOCTYPE html>
 const $ = (id) => document.getElementById(id);
 const tbody = $('tbody'), msg = $('msg'), btn = $('btnSave');
 
+function val(s) {
+  return s ? esc(s) : '<span style="color:var(--muted)">—</span>';
+}
+
 function esc(s) {
   return String(s).replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
 }
@@ -95,7 +99,7 @@ function tick() {
   $('clock').textContent = new Date().toLocaleString('vi-VN', {
     timeZone: TZ, hour12: false, weekday: 'long',
     day: '2-digit', month: '2-digit', year: 'numeric',
-    hour: '2-digit', minute: '2-digit', 
+    hour: '2-digit', minute: '2-digit',
   });
 }
 tick();
@@ -118,9 +122,9 @@ async function load() {
     }
     tbody.innerHTML = data.map((r, i) =>
       '<tr><td class="stt">' + (i + 1) + '</td>' +
-      '<td>' + esc(r.mo_ta) + '</td>' +
-      '<td>' + esc(r.loai_thong_tin) + '</td>' +
-      '<td class="nd">' + esc(r.noi_dung) + '</td>' +
+      '<td>' + val(r.mo_ta) + '</td>' +
+      '<td>' + val(r.loai_thong_tin) + '</td>' +
+      '<td class="nd">' + val(r.noi_dung) + '</td>' +
       '<td class="tg">' + fmtTime(r.created_at) + '</td>' +
       '<td><button class="del" data-id="' + r.id + '">Xóa</button></td></tr>'
     ).join('');
@@ -201,7 +205,7 @@ export default {
       const mo_ta = String(b.mo_ta || '').trim();
       const loai = String(b.loai_thong_tin || '').trim();
       const noi_dung = String(b.noi_dung || '').trim();
-      if (!mo_ta || !loai || !noi_dung) return json({ error: 'Thiếu dữ liệu' }, 400);
+      if (!mo_ta || !loai) return json({ error: 'Loại thông tin và Mô tả là bắt buộc' }, 400);
       if (mo_ta.length > 300 || loai.length > 100 || noi_dung.length > 10000) {
         return json({ error: 'Dữ liệu quá dài' }, 400);
       }
