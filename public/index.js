@@ -101,7 +101,7 @@ function tick() {
 tick();
 setInterval(tick, 1000);
 
-// Chỉ hiển thị các dòng vừa thêm trong lần mở trang này (dữ liệu cũ vẫn nằm trong D1)
+// 
 const sessionIds = new Set();
 
 async function load() {
@@ -135,10 +135,10 @@ btn.addEventListener('click', async () => {
     mo_ta: $('mota').value.trim(),
     noi_dung: $('noidung').value.trim(),
   };
-  //if (!body.loai_thong_tin || !body.mo_ta || !body.noi_dung) {
-    //msg.textContent = 'Vui lòng nhập đủ 3 trường.';
-    //return;
-  //}
+  if (!body.loai_thong_tin || !body.mo_ta) {
+    msg.textContent = 'Vui lòng nhập Loại thông tin và Mô tả (Nội dung có thể để trống).';
+    return;
+  }
   btn.disabled = true; msg.textContent = 'Đang lưu...';
   try {
     const res = await fetch('/api/entries', {
@@ -151,11 +151,9 @@ btn.addEventListener('click', async () => {
     $('loai').value = ''; $('mota').value = ''; $('noidung').value = '';
     msg.textContent = 'Đã lưu.';
     await load();
-  } 
-    //catch (e) {
-    //msg.textContent = 'Lưu thất bại, thử lại.';
-  //}
-    finally {
+  } catch (e) {
+    msg.textContent = 'Lưu thất bại, thử lại.';
+  } finally {
     btn.disabled = false;
   }
 });
