@@ -27,11 +27,11 @@ Mở địa chỉ Vite hiển thị trong terminal (mặc định `http://localh
 | `pnpm preview` | Build và chạy bản production bằng Wrangler |
 | `pnpm db:init:local` | Tạo bảng D1 cho phát triển cục bộ |
 | `pnpm db:init` | Tạo bảng D1 trên Cloudflare |
-| `pnpm deploy` | Build và triển khai Worker cùng giao diện |
+| `pnpm run deploy` | Build và triển khai Worker cùng giao diện |
 
 ## D1 production
 
-`wrangler.jsonc` liên kết database `db_duyvu`. Chạy `pnpm db:init` một lần để tạo bảng, rồi `pnpm deploy` để triển khai. Nếu dùng database khác, cập nhật `database_name` và `database_id` trong `wrangler.jsonc`.
+`wrangler.jsonc` liên kết database `db_duyvu`. Chạy `pnpm db:init` một lần để tạo bảng, rồi `pnpm run deploy` để triển khai. Nếu dùng database khác, cập nhật `database_name` và `database_id` trong `wrangler.jsonc`.
 
 ## API
 
