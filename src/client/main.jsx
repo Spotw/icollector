@@ -2,6 +2,8 @@ import React, { useEffect, useMemo, useState } from 'react';
 import { createRoot } from 'react-dom/client';
 import './styles.css';
 
+const SESSION_ENTRIES_KEY = 'icollector.current-session-entry-ids';
+
 const dateFormatter = new Intl.DateTimeFormat('vi-VN', {
   day: '2-digit',
   month: 'short',
@@ -52,6 +54,7 @@ async function request(path, options) {
 
 function App() {
   const [entries, setEntries] = useState([]);
+  const [sessionEntryIds, setSessionEntryIds] = useState(() => new Set());
   const [query, setQuery] = useState('');
   const [category, setCategory] = useState('Tất cả');
   const [form, setForm] = useState({ mo_ta: '', loai_thong_tin: '', noi_dung: '' });
@@ -61,10 +64,11 @@ function App() {
   const [confirmEntry, setConfirmEntry] = useState(null);
   const [notice, setNotice] = useState(null);
 
-  async function loadEntries() {
+  async function loadEntries(currentSessionIds = sessionEntryIds) {
     setLoading(true);
     try {
-      setEntries(await request('/api/entries'));
+      const allEntries = await request('/api/entries');
+      setEntries(allEntries.filter((entry) => currentSessionIds.has(entry.id)));
     } catch (error) {
       setNotice({ type: 'error', text: error.message });
     } finally {
@@ -73,7 +77,24 @@ function App() {
   }
 
   useEffect(() => {
-    loadEntries();
+    async function loadCurrentSessionEntries() {
+      try {
+        const storedIds = window.sessionStorage.getItem(SESSION_ENTRIES_KEY);
+        const parsedIds = storedIds ? JSON.parse(storedIds) : [];
+        if (!Array.isArray(parsedIds) || !parsedIds.every(Number.isSafeInteger)) {
+          throw new Error('Không thể đọc danh sách thông tin của phiên hiện tại.');
+        }
+
+        const currentSessionIds = new Set(parsedIds);
+        setSessionEntryIds(currentSessionIds);
+        await loadEntries(currentSessionIds);
+      } catch (error) {
+        setNotice({ type: 'error', text: error.message });
+        setLoading(false);
+      }
+    }
+
+    loadCurrentSessionEntries();
   }, []);
 
   const categories = useMemo(
@@ -100,14 +121,18 @@ function App() {
     setSaving(true);
     setNotice(null);
     try {
-      await request('/api/entries', {
+      const result = await request('/api/entries', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(form),
       });
+      const currentSessionIds = new Set(sessionEntryIds);
+      currentSessionIds.add(result.id);
+      window.sessionStorage.setItem(SESSION_ENTRIES_KEY, JSON.stringify([...currentSessionIds]));
+      setSessionEntryIds(currentSessionIds);
       setForm({ mo_ta: '', loai_thong_tin: '', noi_dung: '' });
       setNotice({ type: 'success', text: 'Đã lưu thông tin mới vào bộ sưu tập.' });
-      await loadEntries();
+      await loadEntries(currentSessionIds);
     } catch (error) {
       setNotice({ type: 'error', text: error.message });
     } finally {
@@ -257,7 +282,7 @@ function App() {
               <label className="field-label" htmlFor="entry-content">Nội dung chi tiết <span className="optional">(không bắt buộc)</span></label>
               <textarea id="entry-content" name="noi_dung" value={form.noi_dung} onChange={updateForm} placeholder="Thêm vài dòng để nhớ rõ hơn..." maxLength={10000} rows={5} />
               <div className="character-count">{form.noi_dung.length.toLocaleString('vi-VN')} / 10.000</div>
-              <button className="submit-button" type="submit" disabled={saving}>
+              <button className="submit-button" type="submit" disabled={saving || loading}>
                 {saving ? <><span className="button-spinner" />Đang lưu...</> : <><Icon name="plus" size={18} /> Lưu vào bộ sưu tập</>}
               </button>
               <div className="privacy-note"><span>✦</span> Thông tin của bạn được lưu trong bộ sưu tập.</div>

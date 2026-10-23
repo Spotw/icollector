@@ -38,3 +38,5 @@ Mở địa chỉ Vite hiển thị trong terminal (mặc định `http://localh
 - `GET /api/entries` — liệt kê thông tin mới nhất.
 - `POST /api/entries` — thêm thông tin. `mo_ta` và `loai_thong_tin` là bắt buộc.
 - `DELETE /api/entries/:id` — xóa một thông tin đã lưu.
+
+Danh sách trên giao diện chỉ hiển thị các thông tin được thêm trong phiên tab hiện tại. Thông tin vẫn được lưu trong D1, nhưng không được hiển thị khi mở một phiên tab mới.
